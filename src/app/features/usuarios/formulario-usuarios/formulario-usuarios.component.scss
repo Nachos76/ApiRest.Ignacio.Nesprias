@@ -1,0 +1,8 @@
+input:-webkit-autofill,
+  input:-webkit-autofill:focus {
+    transition: background-color 600000s 0s, color 600000s 0s;
+  }
+
+  .mat-form-field, .mat-select {
+    font-family: 'Montserrat', sans-serif, "Helvetica Neue", sans-serif;
+  }

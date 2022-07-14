@@ -1,0 +1,97 @@
+<nav class="flex items-center justify-between flex-wrap bg-primary-900 p-3 dark:bg-default-900">
+  <mat-toolbar class=" bg-primary-900 dark:bg-default-900">
+    <mat-toolbar-row class="p-0">
+      <button
+        type="button"
+        aria-label="Toggle sidenav"
+        mat-icon-button
+        class="text-primary-200"
+        (click)="toggle()"
+      >
+        <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
+      </button>
+
+      <div class="flex items-center flex-shrink-0 text-white mr-6 ml-3">
+        <img
+          src="https://img.icons8.com/external-sketchy-juicy-fish/40/undefined/external-code-cryptography-sketchy-sketchy-juicy-fish.png"
+        />
+
+        <span class="font-semibold text-xl tracking-tight pl-1"
+          >GreenCoder</span
+        >
+      </div>
+      <div class="w-full flex-grow flex items-center">
+        <div class="text-sm flex-grow text-primary-100">
+          <button
+            mat-button
+            class="hidden lg:inline-block hover:text-primary-50"
+            (click)="navegarA('cursos')"
+          >
+            Cursos
+          </button>
+          <button
+            mat-button
+            class="hidden lg:inline-block hover:text-primary-50"
+            (click)="navegarA('alumnos')"
+          >
+            Alumnos
+          </button>
+          <button
+            mat-button
+            class="hidden lg:inline-block hover:text-primary-50"
+            (click)="navegarA('inscripciones')"
+          >
+            Inscripciones
+          </button>
+          <button
+            mat-button
+            class="hidden lg:inline-block hover:text-primary-50"
+            (click)="navegarA('usuarios')"
+          >
+            Usuarios
+          </button>
+        </div>
+        <div>
+          <div class="flex justify-center" *ngIf="(usuarioLogueadoPromise | async)">
+            <button
+              mat-icon-button
+              [matMenuTriggerFor]="menu"
+              aria-label="Example icon-button with a menu"
+            >
+              <app-avatar [imagen]="(usuarioLogueadoPromise | async)?.imagen"></app-avatar>
+            </button>
+            <mat-menu #menu="matMenu">
+              <!-- <span>{{(usuarioLogueadoPromise | async)?.nombre }}</span>
+              <span>{{(usuarioLogueadoPromise | async)?.rol }}</span> -->
+              <div class="py-3 px-4 text-center divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600">
+                <span class="block text-sm text-gray-900 dark:text-white">{{(usuarioLogueadoPromise | async)?.nombre | nombreApellido: (usuarioLogueadoPromise | async)?.apellido:"apellido" }}</span>
+                <span class="block text-sm font-medium text-gray-500 truncate dark:text-gray-400">{{(usuarioLogueadoPromise | async)?.rol | uppercase}}</span>
+              </div>
+
+              <button mat-menu-item
+              (click)="editarPerfil()">
+                <mat-icon>badge</mat-icon>
+                <span>Perfil</span>
+              </button>
+              <button mat-menu-item disabled>
+                <mat-icon>key</mat-icon>
+                <span>Contraeñas</span>
+              </button>
+              <button mat-menu-item>
+                <mat-icon>close</mat-icon>
+                <span>Salir</span>
+              </button>
+            </mat-menu>
+            <button mat-icon-button class="text-white" aria-label="Example icon-button with share icon"
+              [matTooltip]="currentTheme.themeMode === ThemeMode.DARK ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'"
+              (click)="changeThemeMode(currentTheme.themeMode)">
+              <mat-icon class="text-white-600 dark:text-yellow-500">
+                {{ currentTheme.themeMode === ThemeMode.DARK ? 'light_mode' : 'dark_mode' }}
+              </mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+    </mat-toolbar-row>
+  </mat-toolbar>
+</nav>

@@ -1,0 +1,159 @@
+<div class="mx-auto px-4 sm:px-8">
+  <div class="py-2">
+    <app-titulo-grilla
+      [titulo]="titulo"
+      [incluirNuevo]="false"
+      [incluirVolver]="true"
+      (volverClicked)="volver()"
+    ></app-titulo-grilla>
+    <div class="flex flex-col -mx-4 sm:-mx-8 px-4 sm:px-8">
+      <div class="flex flex-row justify-center p-2">
+        <form
+          class="mat-elevation-z8 w-full rounded-lg overflow-hidden bg-white dark:bg-default-600 px-5 py-6"
+          [formGroup]="formulario"
+          (ngSubmit)="(null)"
+          novalidate
+        >
+          <div class="grid xl:grid-cols-2 xl:gap-6">
+            <div class="relative z-0 w-full mb-6 group">
+              <mat-form-field
+                class="w-full bg-transparent -mt-6 top-0.5"
+                appearance="standard"
+              >
+                <mat-label>Curso</mat-label>
+                <mat-select
+                  formControlName="cursoId"
+                  required
+                  class="text-primary-800 text-sm dark:text-default-200"
+                >
+                  <mat-option
+                    *ngFor="let r of cursosOPT$ | async"
+                    [value]="r.id"
+                    class="text-primary-800 text-sm dark:text-default-200 dark:bg-default-800 h-12"
+                  >
+                    <div class="flex items-center">
+                      <app-avatar [imagen]="r.imagen"></app-avatar>
+                      <div class="ml-3">
+                        <div class="font-semibold">
+                          {{ r.nombre }}
+                        </div>
+                      </div>
+                    </div>
+                  </mat-option>
+                </mat-select>
+                <mat-error
+                  *ngIf="formulario.get('cursoId')?.errors?.['required'] && formulario.get('cursoId')?.touched  "
+                  class="mt-2 text-sm text-red-600 dark:text-red-500"
+                  >Curso es requerido</mat-error
+                >
+              </mat-form-field>
+            </div>
+            <div class="relative z-0 w-full mb-6 group">
+              <mat-form-field
+                class="w-full bg-transparent -mt-6 top-0.5"
+                appearance="standard"
+              >
+                <mat-label>Alumno</mat-label>
+                <mat-select
+                  formControlName="alumnoId"
+                  required
+                  class="text-primary-800 text-sm dark:text-default-200"
+                >
+                  <mat-option
+                    *ngFor="let r of alumnosOPT$ | async"
+                    [value]="r.id"
+                    class="text-primary-800 text-sm dark:text-default-200 dark:bg-default-800 h-12"
+                  >
+                    <div class="flex items-center">
+                      <app-avatar [imagen]="r.imagen"></app-avatar>
+                      <div class="ml-3">
+                        <div class="font-semibold">
+                          {{ r.nombre | nombreApellido: r.apellido:"apellido" }}
+                        </div>
+                      </div>
+                    </div>
+                  </mat-option>
+                </mat-select>
+                <mat-error
+                  *ngIf="formulario.get('alumnoId')?.errors?.['required'] && formulario.get('alumnoId')?.touched  "
+                  class="mt-2 text-sm text-red-600 dark:text-red-500"
+                  >Alumno es requerido</mat-error
+                >
+              </mat-form-field>
+            </div>
+          </div>
+
+          <div class="grid xl:grid-cols-2 xl:gap-6">
+            <div class="relative z-0 w-full mb-6 group">
+              <input
+                type="date"
+                name="fecha"
+                id="fecha"
+                class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-teal-500 focus:outline-none focus:ring-0 focus:border-teal-600 peer"
+                placeholder=" "
+                formControlName="fecha"
+              />
+              <label
+                for="fecha"
+                class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-teal-600 peer-focus:dark:text-teal-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                >Fecha</label
+              >
+            </div>
+            <div class="relative z-0 w-full mb-6 group">
+              <mat-form-field
+                class="w-full bg-transparent -mt-6 top-0.5"
+                appearance="standard"
+              >
+                <mat-label>Estado</mat-label>
+                <mat-select
+                  formControlName="estado"
+                  required
+                  class="text-primary-800 text-sm dark:text-default-200"
+                >
+                  <mat-option
+                    *ngFor="let r of [{ value: 0 }, { value: 1 }]"
+                    [value]="r.value"
+                    class="text-primary-800 text-sm dark:text-default-200 dark:bg-default-800"
+                  >
+                    {{ r.value | visEstado }}
+                  </mat-option>
+                </mat-select>
+                <mat-error
+                  *ngIf="formulario.get('estado')?.errors?.['required'] && formulario.get('estado')?.touched  "
+                  class="mt-2 text-sm text-red-600 dark:text-red-500"
+                  >Estado es requerido</mat-error
+                >
+              </mat-form-field>
+            </div>
+          </div>
+          <div
+            class="flex flex-shrink-0 flex-wrap text-right justify-end p-4 mt-16"
+          >
+            <div
+              class="flex-1 break-words mt-2 text-sm text-red-600 dark:text-red-500 mr-5"
+              *ngIf="formulario.invalid"
+            >
+              Los campos marcados con * son requeridos
+            </div>
+            <div class="">
+              <button
+                (click)="cancelar()"
+                class="inline-block px-6 py-2.5 mr-2 bg-primary-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-primary-700 hover:shadow-lg focus:bg-primary-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-secondary-500 active:shadow-lg transition duration-150 ease-in-out"
+              >
+                Cancelar
+              </button>
+              <button
+                mat-button
+                (click)="agregarInscripcion(formulario.value)"
+                class="inline-block px-6 py-2.5 bg-primary-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-primary-700 hover:shadow-lg focus:bg-primary-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-secondary-500 active:shadow-lg transition duration-150 ease-in-out cursor-pointer disabled:cursor-not-allowed disabled:opacity-75"
+                [disabled]="formulario.invalid"
+              >
+                Guardar
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

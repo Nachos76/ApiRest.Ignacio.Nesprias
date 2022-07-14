@@ -1,0 +1,43 @@
+<mat-sidenav-container class="bg-primary-50 dark:bg-default-500">
+  <mat-sidenav
+    #drawer
+    class="md:flex w-48"
+    [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
+    [mode]="(isHandset$ | async) ? 'over' : 'side'"
+    [opened]="(isHandset$ | async) === false"
+    class="w-48 bg-teal-100 dark:bg-default-400"
+  >
+    <!-- <mat-toolbar>Menu</mat-toolbar> -->
+    <mat-nav-list>
+      <button mat-list-item routerLink="cursos">
+        <mat-icon aria-label="Listado de cursos" class="mr-3"
+          >cast_for_education</mat-icon
+        >
+        Cursos
+      </button>
+      <button mat-list-item routerLink="alumnos">
+        <mat-icon aria-label="Listado de alumnos" class="mr-3">school</mat-icon>
+        Alumnos
+      </button>
+      <button mat-list-item routerLink="inscripciones">
+        <mat-icon aria-label="Listado de cursos" class="mr-3">draw</mat-icon>
+        Inscripciones
+      </button>
+      <button mat-list-item routerLink="usuarios">
+        <mat-icon aria-label="Listado de cursos" class="mr-3">group</mat-icon>
+        Usuarios
+      </button>
+      <button mat-list-item (click)="drawer.toggle()">
+        <mat-icon aria-label="Listado de cursos" class="mr-3">close</mat-icon>
+        Cerrar
+      </button>
+    </mat-nav-list>
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    <!-- Add Content Here -->
+    <div class="max-w-full w-screen bg-primary-50 flex flex-grow flex-row dark:bg-default-500">
+      <app-main class="w-full"></app-main>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>

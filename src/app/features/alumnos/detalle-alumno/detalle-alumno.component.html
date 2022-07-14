@@ -1,0 +1,336 @@
+<div class="mx-auto px-4 sm:px-8">
+  <div class="py-2">
+    <app-titulo-grilla
+      [titulo]="titulo"
+      [incluirNuevo]="false"
+      [incluirVolver]="true"
+      (volverClicked)="volver()"
+    ></app-titulo-grilla>
+    <div
+      *ngIf="alumno; else nada"
+      class="flex flex-col -mx-4 sm:-mx-8 px-4 sm:px-8"
+    >
+      <div class="flex flex-row justify-center p-2">
+        <div
+          class="md:flex no-wrap md:-mx-2 rounded-lg  bg-primary-50 dark:bg-default-600 px-5 py-6"
+        >
+          <!-- Left Side -->
+          <div class="w-full md:w-3/12 md:mx-2">
+            <div
+              class="rounded-lg overflow-hidden bg-primary-100 dark:bg-default-700 p-3 border-t-4 border-primary-400"
+            >
+              <div class="image overflow-hidden">
+                <img
+                  class="h-auto w-full mx-auto"
+                  src="{{
+                    alumno?.imagen
+                      ? reemplazarURL(alumno?.imagen)
+                      : defaultImagen
+                  }}"
+                  alt=""
+                />
+              </div>
+              <h1
+                class="text-primary-900 dark:text-default-100 font-bold text-xl leading-8 my-1"
+              >
+                {{
+                  alumno?.nombre | nombreApellido: alumno?.apellido:"apellido"
+                }}
+              </h1>
+              <h3
+                class="text-primary-600 dark:text-default-100 font-lg text-semibold leading-6"
+              >
+                <span appContarHoy [fn]="alumno?.fechaNacimiento"></span>
+                <span> años</span>
+              </h3>
+              <p
+                class="text-sm text-primary-500 dark:text-default-100 hover:text-primary-600 leading-6"
+              >
+                {{ alumno?.descripcion }}
+              </p>
+              <ul
+                class="bg-primary-200 dark:bg-default-600 text-primary-600 dark:text-default-100 hover:text-primary-700 hover:shadow py-2 px-3 mt-3 divide-y rounded shadow-sm"
+              >
+                <li class="flex items-center py-3">
+                  <span>Estado</span>
+                  <span class="ml-auto"
+                    ><span
+                      [ngClass]="
+                        alumno?.estado == 1 ? 'bg-primary-500' : 'bg-danger-500'
+                      "
+                      class="py-1 px-2 rounded text-white text-sm"
+                      >{{ alumno?.estado | visEstado }}</span
+                    ></span
+                  >
+                </li>
+                <li class="flex items-center py-3">
+                  <span>Fecha de nacimiento</span>
+                  <span class="ml-auto">{{
+                    alumno?.fechaNacimiento | date
+                  }}</span>
+                </li>
+              </ul>
+            </div>
+            <div class="my-4"></div>
+          </div>
+          <!-- Right Side -->
+          <div class="w-full md:w-9/12 mx-2 h-64">
+            <div
+              class="rounded-lg overflow-hidden bg-white dark:bg-default-700 p-3 shadow-sm dark:text-default-100"
+            >
+              <div
+                class="flex items-center space-x-2 font-semibold text-primary-900 dark:text-default-100 leading-8"
+              >
+                <mat-icon clas="text-prymary-500 dark:text-default-100"
+                  >person</mat-icon
+                >
+                <span class="tracking-wide">Detalles</span>
+              </div>
+              <div class="text-primary-700 dark:text-default-100">
+                <div class="grid md:grid-cols-2 text-sm">
+                  <div class="grid grid-cols-2">
+                    <div class="px-4 py-2 font-semibold">Nombre</div>
+                    <div class="px-4 py-2">{{ alumno?.nombre }}</div>
+                  </div>
+                  <div class="grid grid-cols-2">
+                    <div class="px-4 py-2 font-semibold">Apellido</div>
+                    <div class="px-4 py-2">{{ alumno?.apellido }}</div>
+                  </div>
+                  <div class="grid grid-cols-2">
+                    <div class="px-4 py-2 font-semibold">DNI</div>
+                    <div class="px-4 py-2">{{ alumno?.dni }}</div>
+                  </div>
+                  <div class="grid grid-cols-2">
+                    <div class="px-4 py-2 font-semibold">Género</div>
+                    <div class="px-4 py-2">{{ alumno?.sexo }}</div>
+                  </div>
+                  <div class="grid grid-cols-2">
+                    <div class="px-4 py-2 font-semibold">Telefono</div>
+                    <div class="px-4 py-2">{{ alumno?.telefono }}</div>
+                  </div>
+                  <div class="grid grid-cols-2">
+                    <div class="px-4 py-2 font-semibold">Direccion</div>
+                    <div class="px-4 py-2">{{ alumno?.direccion }}</div>
+                  </div>
+                  <div class="grid grid-cols-2">
+                    <div class="px-4 py-2 font-semibold">
+                      Correo electrónico
+                    </div>
+                    <div class="px-4 py-2">
+                      <a
+                        class="text-secondary-800 dark:text-default-50"
+                        href="mailto:{{ alumno?.email }}"
+                        >{{ alumno?.email }}</a
+                      >
+                    </div>
+                  </div>
+                  <div class="grid grid-cols-2">
+                    <div class="px-4 py-2 font-semibold"></div>
+                    <div class="px-4 py-2"></div>
+                  </div>
+                  <div class="grid grid-cols-1 col-span-2">
+                    <div class="px-4 py-2 font-semibold">Conocimientos</div>
+                    <div class="px-4 py-2">
+                      <app-badge-list
+                        [items]="alumno?.conocimientos"
+                      ></app-badge-list>
+                    </div>
+                  </div>
+
+                  <div class="grid grid-cols-1 col-span-2">
+                    <div class="px-4 py-2 font-semibold">Cursos</div>
+                    <div class="px-4 py-2">
+                      <app-badge-list [items]="alumno?.cursos"></app-badge-list>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- End of about section -->
+
+            <div class="my-4"></div>
+
+            <!-- Detalle de cursos -->
+            <div
+              class="rounded-lg overflow-hidden bg-white dark:bg-default-700 p-3 shadow-sm"
+            >
+              <div
+                class="flex items-center space-x-2 font-semibold text-primary-900 dark:text-default-100 leading-8"
+              >
+                <mat-icon clas="text-prymary-500 dark:text-default-100"
+                  >cast_for_education</mat-icon
+                >
+                <span class="tracking-wide">Cursos</span>
+              </div>
+              <table
+                mat-table
+                [dataSource]="(tableDataSource$ | async)!"
+                class="mat-elevation-z8 w-full rounded-lg overflow-hidden mb-1"
+              >
+                <!-- ID Definition -->
+                <ng-container matColumnDef="id">
+                  <th
+                    mat-header-cell
+                    *matHeaderCellDef
+                    class="px-5 py-3 text-primary-100 uppercase font-medium"
+                  >
+                    #
+                  </th>
+                  <td mat-cell *matCellDef="let row" class="px-5 py-5">
+                    {{ row.id }}
+                  </td>
+                </ng-container>
+
+                <!-- Nombre -->
+                <ng-container matColumnDef="nombre">
+                  <th
+                    mat-header-cell
+                    *matHeaderCellDef
+                    class="px-5 py-3 text-primary-100 uppercase font-medium"
+                  >
+                    Nombre
+                  </th>
+                  <td mat-cell *matCellDef="let row" class="px-5 py-5">
+                    <div class="flex items-center">
+                      <app-avatar [imagen]="row.curso.imagen"></app-avatar>
+                      <div class="ml-3">
+                        <div class="font-semibold">
+                          {{ row.curso.nombre }}
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                </ng-container>
+                <!-- Descripcion -->
+                <ng-container matColumnDef="descripcion">
+                  <th
+                    mat-header-cell
+                    *matHeaderCellDef
+                    class="px-5 py-3 text-primary-100 uppercase font-medium"
+                  >
+                    Descripcion
+                  </th>
+                  <td mat-cell *matCellDef="let row" class="px-5 py-5">
+                    {{ row.curso.descripcion }}
+                  </td>
+                </ng-container>
+                <!-- fechaInicio -->
+                <ng-container matColumnDef="fechaInicio">
+                  <th
+                    mat-header-cell
+                    *matHeaderCellDef
+                    class="px-5 py-3 text-primary-100 uppercase font-medium"
+                  >
+                    Fecha de Inicio
+                  </th>
+                  <td mat-cell *matCellDef="let row" class="px-5 py-5">
+                    {{ row.curso.fechaInicio | date }}
+                  </td>
+                </ng-container>
+
+                <!-- Estado -->
+                <ng-container matColumnDef="estado">
+                  <th
+                    mat-header-cell
+                    *matHeaderCellDef
+                    class="px-5 py-3 text-primary-100 uppercase font-medium"
+                  >
+                    Estado
+                  </th>
+                  <td mat-cell *matCellDef="let row" class="px-5 py-5">
+                    {{ row.estado | visEstado }}
+                  </td>
+                </ng-container>
+                <!--Acciones-->
+                <ng-container matColumnDef="actions">
+                  <th
+                    mat-header-cell
+                    *matHeaderCellDef
+                    class="px-5 py-3 text-primary-100 uppercase font-medium"
+                  >
+                    <label for="buscador" class="sr-only">Buscar</label>
+                    <div class="relative w-full">
+                      <div
+                        class="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none"
+                      >
+                        <mat-icon>search</mat-icon>
+                      </div>
+                      <input
+                        type="text"
+                        id="buscador"
+                        class="max-w-fit w-full bg-primary-50 border border-primary-300 text-primary-900 text-sm rounded-lg focus:primary-secondary-500 focus:border-secondary-500 block pl-10 p-2.5 dark:bg-primary-700 dark:border-primary-600 dark:placeholder-primary-400 dark:text-white dark:focus:ring-secondary-500 dark:focus:border-secondary-500"
+                        placeholder=""
+                        matInput
+                        [formControl]="buscador"
+                      />
+                    </div>
+                  </th>
+                  <td
+                    mat-cell
+                    *matCellDef="let row"
+                    class="px-5 py-5 text-center"
+                    style="min-width: 180px"
+                  >
+                    <button
+                      mat-icon-button
+                      [matMenuTriggerFor]="appMenu"
+                      aria-label=""
+                    >
+                      <mat-icon>more_vert</mat-icon>
+                    </button>
+                    <mat-menu #appMenu="matMenu">
+                      <button
+                        mat-menu-item
+                        (click)="eliminar(row)"
+                        class="text-primary-800 font-medium dark:text-default-100"
+                      >
+                        <mat-icon
+                          class="text-primary-800 text-lg dark:text-default-100"
+                          >delete</mat-icon
+                        >
+                        <span>Eliminar</span>
+                      </button>
+                    </mat-menu>
+                  </td>
+                </ng-container>
+
+                <tr
+                  mat-header-row
+                  *matHeaderRowDef="displayedColumnsTable"
+                  class="w-full bg-primary-800 dark:bg-default-700 text-primary-300 uppercase font-semibold tracking-wider text-xs text-left border-b-2 border-primary-200 h-8"
+                ></tr>
+                <tr
+                  mat-row
+                  *matRowDef="let row; columns: displayedColumnsTable"
+                  class="border-b border-gray-200 bg-white dark:bg-default-600 text-sm text-primary-900 cursor-pointer"
+                ></tr>
+                <tr class="mat-row" *matNoDataRow>
+                  <td
+                    class="mat-cell"
+                    [attr.colspan]="displayedColumnsTable.length"
+                    class="px-5 py-3 text-danger-300 uppercase font-medium text-center"
+                  >
+                    No hay datos para mostrar.
+                  </td>
+                </tr>
+              </table>
+            </div>
+            <!-- End of profile tab -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #nada>
+  <div class="flex flex-col -mx-4 sm:-mx-8 px-4 sm:px-8">
+    <div class="flex flex-row justify-center p-2">
+      <div
+        class="w-full px-5 py-3 text-danger-300 uppercase font-medium text-center"
+      >
+        No hay alumno seleccionado
+      </div>
+    </div>
+  </div>
+</ng-template>

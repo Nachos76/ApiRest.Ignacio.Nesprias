@@ -1,0 +1,142 @@
+<div class="mx-auto px-4 sm:px-8">
+  <div class="py-2">
+    <app-titulo-grilla
+      [titulo]="titulo"
+      [incluirNuevo]="false"
+      [incluirVolver]="true"
+      (volverClicked)="volver()"
+    ></app-titulo-grilla>
+    <div
+      *ngIf="usuario; else nada"
+      class="flex flex-col -mx-4 sm:-mx-8 px-4 sm:px-8"
+    >
+      <div class="flex flex-row justify-center p-2">
+        <div
+          class="md:flex no-wrap md:-mx-2 rounded-lg overflow-hidden bg-primary-50 dark:bg-default-600 px-5 py-6"
+        >
+          <!-- Left Side -->
+          <div class="w-full md:w-3/12 md:mx-2">
+            <div
+              class="rounded-lg overflow-hidden bg-primary-100 dark:bg-default-700 p-3 border-t-4 border-primary-400"
+            >
+              <div class="image overflow-hidden">
+                <img
+                  class="h-auto w-full mx-auto"
+                  src="{{ usuario?.imagen }}"
+                  alt=""
+                />
+              </div>
+              <h1
+                class="text-primary-900 dark:text-default-100 font-bold text-xl leading-8 my-1"
+              >
+                {{
+                  usuario?.nombre | nombreApellido: usuario?.apellido:"apellido"
+                }}
+              </h1>
+              <h3
+                class="text-primary-600 dark:text-default-100 font-lg text-semibold leading-6"
+              >
+                {{ usuario?.rol | visRoles }}
+              </h3>
+              <p
+                class="text-sm text-primary-500 dark:text-default-100 hover:text-primary-600 leading-6"
+              >
+                {{ usuario?.descripcion }}
+              </p>
+              <ul
+                class="bg-primary-200 dark:bg-default-600 text-primary-600 dark:text-default-100 hover:text-primary-700 hover:shadow py-2 px-3 mt-3 divide-y rounded shadow-sm"
+              >
+                <li class="flex items-center py-3">
+                  <span>Estado</span>
+                  <span class="ml-auto"
+                    ><span
+                      [ngClass]="
+                        usuario?.estado == 1
+                          ? 'bg-primary-500'
+                          : 'bg-danger-500'
+                      "
+                      class="py-1 px-2 rounded text-white text-sm"
+                      >{{ usuario?.estado | visEstado }}</span
+                    ></span
+                  >
+                </li>
+                <li class="flex items-center py-3">
+                  <span>Miembro desde</span>
+                  <span class="ml-auto">{{ usuario?.fechaAlta | date }}</span>
+                </li>
+              </ul>
+            </div>
+            <div class="my-4"></div>
+          </div>
+          <!-- Right Side -->
+          <div class="w-full md:w-9/12 mx-2 h-64">
+            <div
+              class="rounded-lg overflow-hidden bg-white dark:bg-default-700 p-3 shadow-sm dark:text-default-100"
+            >
+              <div
+                class="flex items-center space-x-2 font-semibold text-primary-900 dark:text-default-100 leading-8"
+              >
+                <mat-icon clas="text-prymary-500 dark:text-default-100"
+                  >person</mat-icon
+                >
+                <span class="tracking-wide">Detalles</span>
+              </div>
+              <div class="text-primary-700 dark:text-default-100">
+                <div class="grid md:grid-cols-2 text-sm">
+                  <div class="grid grid-cols-2">
+                    <div class="px-4 py-2 font-semibold">Nombre</div>
+                    <div class="px-4 py-2">{{ usuario?.nombre }}</div>
+                  </div>
+                  <div class="grid grid-cols-2">
+                    <div class="px-4 py-2 font-semibold">Apellido</div>
+                    <div class="px-4 py-2">{{ usuario?.apellido }}</div>
+                  </div>
+                  <div class="grid grid-cols-2">
+                    <div class="px-4 py-2 font-semibold">Rol</div>
+                    <div class="px-4 py-2">{{ usuario?.rol | visRoles }}</div>
+                  </div>
+
+                  <div class="grid grid-cols-2">
+                    <div class="px-4 py-2 font-semibold">
+                      Correo electrónico
+                    </div>
+                    <div class="px-4 py-2">
+                      <a
+                        class="text-secondary-800 dark:text-default-50"
+                        href="mailto:{{ usuario?.email }}"
+                        >{{ usuario?.email }}</a
+                      >
+                    </div>
+                  </div>
+                  <div class="grid grid-cols-2">
+                    <div class="px-4 py-2 font-semibold">Fecha de registro</div>
+                    <div class="px-4 py-2">{{ usuario?.fechaAlta | date }}</div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+            <!-- End of about section -->
+
+            <div class="my-4"></div>
+
+           
+            <!-- End of profile tab -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #nada>
+  <div class="flex flex-col -mx-4 sm:-mx-8 px-4 sm:px-8">
+    <div class="flex flex-row justify-center p-2">
+      <div
+        class="w-full px-5 py-3 text-danger-300 uppercase font-medium text-center"
+      >
+        No hay usuario seleccionado
+      </div>
+    </div>
+  </div>
+</ng-template>

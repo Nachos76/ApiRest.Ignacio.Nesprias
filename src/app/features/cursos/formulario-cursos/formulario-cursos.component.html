@@ -1,0 +1,281 @@
+<div class="mx-auto px-4 sm:px-8">
+  <div class="py-2">
+    <app-titulo-grilla
+      [titulo]="titulo"
+      [incluirNuevo]="false"
+      [incluirVolver]="true"
+      (volverClicked)="volver()"
+    ></app-titulo-grilla>
+    <div class="flex flex-col -mx-4 sm:-mx-8 px-4 sm:px-8">
+      <div class="flex flex-row justify-center p-2">
+        <form
+          class="mat-elevation-z8 w-full rounded-lg overflow-hidden bg-white dark:bg-default-600 px-5 py-6"
+          [formGroup]="formulario"
+          (ngSubmit)="(null)"
+          novalidate
+        >
+          <div class="grid xl:grid-cols-3 xl:gap-6">
+            <div class="relative z-0 w-full mb-6 group">
+              <input
+                type="text"
+                name="nombre"
+                id="nombre"
+                class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-teal-500 focus:outline-none focus:ring-0 focus:border-teal-600 peer"
+                placeholder=" "
+                formControlName="nombre"
+              />
+              <label
+                for="nombre"
+                class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-teal-600 peer-focus:dark:text-teal-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                >Nombre<span class="text-red-600"> *</span></label
+              >
+              <span
+                class="mt-2 text-sm text-red-600 dark:text-red-500"
+                *ngIf="formulario.get('nombre')?.errors?.['required'] && formulario.get('nombre')?.touched "
+              >
+                Nombre es requerido</span
+              >
+              <span
+                class="mt-2 text-sm text-red-600 dark:text-red-500"
+                *ngIf="formulario.get('nombre')?.errors?.['minlength'] && formulario.get('nombre')?.touched "
+              >
+                Longitud mínima de 3 carácteres</span
+              >
+            </div>
+            <div class="relative z-0 w-full mb-6 group">
+              <input
+                type="date"
+                name="fechaInicio"
+                id="fechaInicio"
+                class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-teal-500 focus:outline-none focus:ring-0 focus:border-teal-600 peer"
+                placeholder=" "
+                formControlName="fechaInicio"
+              />
+              <label
+                for="fechaInicio"
+                class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-teal-600 peer-focus:dark:text-teal-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                >Fecha Inicio<span class="text-red-600"> *</span></label
+              >
+              <span
+                class="mt-2 text-sm text-red-600 dark:text-red-500"
+                *ngIf="formulario.get('fechaInicio')?.errors?.['required'] && formulario.get('fechaInicio')?.touched "
+              >
+                Fecha de nacimiento es requerido.
+              </span>
+              <span
+                class="mt-2 text-sm text-red-600 dark:text-red-500"
+                *ngIf="formulario.get('fechaInicio')?.errors?.['invalid'] && formulario.get('fechaInicio')?.touched "
+              >
+                Debe ser mayot que la fecha actual</span
+              >
+            </div>
+            <div class="relative z-0 w-full mb-6 group">
+             
+              <input
+                type="number"
+                name="cantClases"
+                id="cantClases"
+                class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-teal-500 focus:outline-none focus:ring-0 focus:border-teal-600 peer"
+                placeholder=" "
+                formControlName="cantClases"
+              />
+              <label
+                for="cantClases"
+                class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-teal-600 peer-focus:dark:text-teal-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                >Cantidad de Clases<span class="text-red-600"> *</span></label
+              >
+              <span
+                class="mt-2 text-sm text-red-600 dark:text-red-500"
+                *ngIf="formulario.get('cantClases')?.errors?.['required'] && formulario.get('cantClases')?.touched  "
+              >
+                Cantidad de Clases es requerido</span
+              >
+              <span
+                class="mt-2 text-sm text-red-600 dark:text-red-500"
+                *ngIf="formulario.get('cantClases')?.errors?.['min'] && formulario.get('cantClases')?.touched  "
+              >
+                El número debe ser mayor que 1</span
+              >
+            </div>
+          </div>
+
+          <div class="grid xl:grid-cols-3 xl:gap-6">
+            <div class="relative z-0 w-full mb-6 group">
+              <input
+                type="number"
+                name="precio"
+                class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-teal-500 focus:outline-none focus:ring-0 focus:border-teal-600 peer"
+                placeholder=" "
+                formControlName="precio"
+              />
+              <label
+                for="precio"
+                class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-teal-600 peer-focus:dark:text-teal-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                >Precio<span class="text-red-600"> *</span></label
+              >
+              <span
+                class="mt-2 text-sm text-red-600 dark:text-red-500"
+                *ngIf="formulario.get('precio')?.errors?.['required'] && formulario.get('precio')?.touched "
+              >
+                Precio es requerido</span
+              >
+              <span
+                class="mt-2 text-sm text-red-600 dark:text-red-500"
+                *ngIf="formulario.get('precio')?.errors?.['min'] && formulario.get('precio')?.touched  "
+              >
+                El número debe ser mayor que 1</span
+              >
+            </div>
+            <div class="relative z-0 w-full mb-6 group">
+              <input
+                type="number"
+                name="capacidad"
+                id="capacidad"
+                class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-teal-500 focus:outline-none focus:ring-0 focus:border-teal-600 peer"
+                placeholder=" "
+                formControlName="capacidad"
+              />
+              <label
+                for="capacidad"
+                class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-teal-600 peer-focus:dark:text-teal-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                >Capacidad<span class="text-red-600"> *</span></label
+              >
+              <span
+                class="mt-2 text-sm text-red-600 dark:text-red-500"
+                *ngIf="formulario.get('capacidad')?.errors?.['required'] && formulario.get('capacidad')?.touched "
+              >
+                Capacidad es requerida</span
+              >
+              <span
+                class="mt-2 text-sm text-red-600 dark:text-red-500"
+                *ngIf="formulario.get('capacidad')?.errors?.['min'] && formulario.get('capacidad')?.touched  "
+              >
+                El número debe ser mayor que 1</span
+              >
+            </div>
+            <div class="relative z-0 w-full mb-6 group">
+               <mat-form-field
+                class="w-full bg-transparent -mt-6 top-0.5"
+                appearance="standard"
+              >
+                <mat-label>Estado</mat-label>
+                <mat-select
+                  formControlName="estado"
+                  required
+                  class="text-primary-800 text-sm dark:text-default-200"
+                >
+                  <mat-option
+                    *ngFor="let r of [{ value: 0 }, { value: 1 }]"
+                    [value]="r.value"
+                    class="text-primary-800 text-sm dark:text-default-200 dark:bg-default-800"
+                  >
+                    {{ r.value | visEstado }}
+                  </mat-option>
+                </mat-select>
+                <mat-error
+                  *ngIf="formulario.get('estado')?.errors?.['required'] && formulario.get('estado')?.touched  "
+                  class="mt-2 text-sm text-red-600 dark:text-red-500"
+                  >Estado es requerido</mat-error
+                >
+              </mat-form-field>
+
+              <!-- <input
+                type="text"
+                name="estado"
+                id="estado"
+                class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-teal-500 focus:outline-none focus:ring-0 focus:border-teal-600 peer"
+                placeholder=" "
+                formControlName="estado"
+              />
+              <label
+                for="estado"
+                class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-teal-600 peer-focus:dark:text-teal-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                >Estado<span class="text-red-600"> *</span></label
+              >
+              <span
+                class="mt-2 text-sm text-red-600 dark:text-red-500"
+                *ngIf="formulario.get('estado')?.errors?.['required'] && formulario.get('estado')?.touched "
+              >
+                Estado es requerido</span
+              > -->
+            </div>
+          </div>
+          <div class="grid xl:grid-cols-2 xl:gap-6">
+            <div class="relative z-0 w-full mb-0 group">
+              <label
+                for="descripcion"
+                class="block mb-2 text-sm font-sm text-gray-500 dark:text-gray-400"
+                >Descripción</label
+              >
+              <textarea
+                id="descripcion"
+                rows="4"
+                class="block p-2.5 w-full text-sm outline-none text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-teal-900 focus:border-teal-900 dark:bg-default-700 dark:border-default-600 dark:placeholder-default-400 dark:text-white dark:focus:ring-default-500 dark:focus:border-default-500"
+                placeholder=""
+                formControlName="descripcion"
+              ></textarea>
+            </div>
+            <div class="relative z-0 w-full mb-0 group">
+              <label
+                class="block mb-2 text-sm font-sm text-gray-500 dark:text-gray-400"
+              >
+                Logo
+              </label>
+              <div class="mt-1 flex items-center">
+                <app-avatar [imagen]="formulario.value.imagen"></app-avatar>
+                <div class="relative z-0 w-full mb-0 group ml-3">
+                  <input
+                    type="text"
+                    name="imagen"
+                    id="imagen"
+                    class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-teal-500 focus:outline-none focus:ring-0 focus:border-teal-600 peer"
+                    placeholder=" "
+                    formControlName="imagen"
+                  />
+                  <label
+                    for="imagen"
+                    class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-teal-600 peer-focus:dark:text-teal-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                    >Link/URL</label
+                  >
+                  <p
+                    id="helper-text-explanation"
+                    class="mt-2 text-sm text-gray-500 dark:text-gray-400"
+                  >
+                    Ingrese el link a la imagen del logo que desee utilizar.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="flex flex-shrink-0 flex-wrap text-right justify-end p-4 mt-16"
+          >
+            <div
+              class="flex-1 break-words mt-2 text-sm text-red-600 dark:text-red-500 mr-5"
+              *ngIf="formulario.invalid"
+            >
+              Los campos marcados con * son requeridos
+            </div>
+            <div class="">
+              <button
+                (click)="cancelar()"
+                class="inline-block px-6 py-2.5 mr-2 bg-primary-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-primary-700 hover:shadow-lg focus:bg-primary-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-secondary-500 active:shadow-lg transition duration-150 ease-in-out"
+              >
+                Cancelar
+              </button>
+              <button
+                mat-button
+                (click)="agregarUsuario(formulario.value)"
+                class="inline-block px-6 py-2.5 bg-primary-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-primary-700 hover:shadow-lg focus:bg-primary-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-secondary-500 active:shadow-lg transition duration-150 ease-in-out cursor-pointer disabled:cursor-not-allowed disabled:opacity-75"
+                [disabled]="formulario.invalid"
+              >
+                Guardar
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

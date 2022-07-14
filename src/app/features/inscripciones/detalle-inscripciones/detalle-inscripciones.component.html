@@ -1,0 +1,212 @@
+<div class="mx-auto px-4 sm:px-8">
+  <div class="py-2">
+    <app-titulo-grilla
+      [titulo]="titulo"
+      [incluirNuevo]="false"
+      [incluirVolver]="true"
+      (volverClicked)="volver()"
+    ></app-titulo-grilla>
+    <div
+      *ngIf="inscripcion; else nada"
+      class="flex flex-col -mx-4 sm:-mx-8 px-4 sm:px-8"
+    >
+      <div class="flex flex-row justify-center p-2">
+        <div
+          class="md:flex no-wrap md:-mx-2 rounded-lg overflow-hidden bg-primary-50 dark:bg-default-600 px-5 py-6"
+        >
+          <!-- Left Side -->
+          <div class="w-full md:w-3/12 md:mx-2">
+            <div
+              class="rounded-lg overflow-hidden bg-primary-100 dark:bg-default-700 p-3 border-t-4 border-primary-400"
+            >
+              <div class="image overflow-hidden">
+                <img
+                  class="h-auto w-full mx-auto"
+                  src="{{ inscripcion.curso?.imagen }}"
+                  src="{{
+                    inscripcion.curso?.imagen ? reemplazarURL(inscripcion.curso?.imagen) : defaultImagen
+                  }}"
+                  alt=""
+                />
+              </div>
+              <h1
+                class="text-primary-900 dark:text-default-100 font-bold text-xl leading-8 my-1"
+              >
+                {{ inscripcion.curso?.nombre }}
+              </h1>
+              <h3
+                class="text-primary-600 dark:text-default-100 font-lg text-semibold leading-6"
+              >
+                {{ inscripcion.curso?.precio | currency: "ARS":"symbol" }}
+              </h3>
+              <p
+                class="text-sm text-primary-500 dark:text-default-100 hover:text-primary-600 leading-6"
+              >
+                {{ inscripcion.curso?.descripcion }}
+              </p>
+              <ul
+                class="bg-primary-200 dark:bg-default-600 text-primary-600 dark:text-default-100 hover:text-primary-700 hover:shadow py-2 px-3 mt-3 divide-y rounded shadow-sm"
+              >
+                <li class="flex items-center py-3">
+                  <span>Estado</span>
+                  <span class="ml-auto"
+                    ><span
+                      [ngClass]="
+                      inscripcion.curso?.estado == 1 ? 'bg-primary-500' : 'bg-danger-500'
+                      "
+                      class="py-1 px-2 rounded text-white text-sm"
+                      >{{ inscripcion.curso?.estado | visEstado }}</span
+                    ></span
+                  >
+                </li>
+                <li class="flex items-center py-3">
+                  <span>Fecha de inicio</span>
+                  <span class="ml-auto">{{ inscripcion.curso?.fechaInicio | date }}</span>
+                </li>
+              </ul>
+            </div>
+            <div class="my-4"></div>
+          </div>
+          <!-- Right Side -->
+          <div class="w-full md:w-9/12 mx-2 h-64">
+            <div
+              class="rounded-lg overflow-hidden bg-white dark:bg-default-700 p-3 shadow-sm dark:text-default-100"
+            >
+              <div
+                class="flex items-center space-x-2 font-semibold text-primary-900 dark:text-default-100 leading-8"
+              >
+                <mat-icon clas="text-prymary-500 dark:text-default-100"
+                  >cast_for_education</mat-icon
+                >
+                <span class="tracking-wide">Detalles</span>
+              </div>
+              <div class="text-primary-700 dark:text-default-100">
+                <div class="grid md:grid-cols-2 text-sm">
+                  <div class="grid grid-cols-2">
+                    <div class="px-4 py-2 font-semibold">Nombre</div>
+                    <div class="px-4 py-2">{{ inscripcion.curso?.nombre }}</div>
+                  </div>
+                  <div class="grid grid-cols-2">
+                    <div class="px-4 py-2 font-semibold">
+                      Cantidad de clases
+                    </div>
+                    <div class="px-4 py-2">{{ inscripcion.curso?.cantClases }}</div>
+                  </div>
+                  <div class="grid grid-cols-2">
+                    <div class="px-4 py-2 font-semibold">Precio</div>
+                    <div class="px-4 py-2">
+                      {{ inscripcion.curso?.precio | currency: "ARS":"symbol" }}
+                    </div>
+                  </div>
+
+                  <div class="grid grid-cols-2">
+                    <div class="px-4 py-2 font-semibold">Capacidad</div>
+                    <div class="px-4 py-2">
+                      {{ inscripcion.curso?.capacidad }}
+                    </div>
+                  </div>
+                  <div class="grid grid-cols-2">
+                    <div class="px-4 py-2 font-semibold">Fecha de inicio</div>
+                    <div class="px-4 py-2">{{ inscripcion.curso?.fechaInicio | date }}</div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+            <!-- End of about section -->
+
+            <div class="my-4"></div>
+            <div
+              class="rounded-lg overflow-hidden bg-white dark:bg-default-700 p-3 shadow-sm dark:text-default-100"
+            >
+              <div
+                class="flex items-center space-x-2 font-semibold text-primary-900 dark:text-default-100 leading-8"
+              >
+                <mat-icon clas="text-prymary-500 dark:text-default-100"
+                  >person</mat-icon
+                >
+                <span class="tracking-wide">Detalles</span>
+              </div>
+              <div class="text-primary-700 dark:text-default-100">
+                <div class="grid md:grid-cols-2 text-sm">
+                  <div class="grid grid-cols-2">
+                    <div class="px-4 py-2 font-semibold">Nombre</div>
+                    <div class="px-4 py-2">{{ inscripcion.alumno?.nombre }}</div>
+                  </div>
+                  <div class="grid grid-cols-2">
+                    <div class="px-4 py-2 font-semibold">Apellido</div>
+                    <div class="px-4 py-2">{{ inscripcion.alumno?.apellido }}</div>
+                  </div>
+                  <div class="grid grid-cols-2">
+                    <div class="px-4 py-2 font-semibold">DNI</div>
+                    <div class="px-4 py-2">{{ inscripcion.alumno?.dni }}</div>
+                  </div>
+                  <div class="grid grid-cols-2">
+                    <div class="px-4 py-2 font-semibold">Género</div>
+                    <div class="px-4 py-2">{{ inscripcion.alumno?.sexo }}</div>
+                  </div>
+                  <div class="grid grid-cols-2">
+                    <div class="px-4 py-2 font-semibold">Telefono</div>
+                    <div class="px-4 py-2">{{ inscripcion.alumno?.telefono }}</div>
+                  </div>
+                  <div class="grid grid-cols-2">
+                    <div class="px-4 py-2 font-semibold">Direccion</div>
+                    <div class="px-4 py-2">{{ inscripcion.alumno?.direccion }}</div>
+                  </div>
+                  <div class="grid grid-cols-2">
+                    <div class="px-4 py-2 font-semibold">
+                      Correo electrónico
+                    </div>
+                    <div class="px-4 py-2">
+                      <a
+                        class="text-secondary-800 dark:text-default-50"
+                        href="mailto:{{ inscripcion.alumno?.email }}"
+                        >{{ inscripcion.alumno?.email }}</a
+                      >
+                    </div>
+                  </div>
+                  <div class="grid grid-cols-2">
+                    <div class="px-4 py-2 font-semibold">
+                      
+                    </div>
+                    <div class="px-4 py-2">
+                      
+                    </div>
+                  </div>
+                  <div class="grid grid-cols-1 col-span-2">
+                    <div class="px-4 py-2 font-semibold">Conocimientos</div>
+                    <div class="px-4 py-2">
+                      <app-badge-list
+                        [items]="inscripcion.alumno?.conocimientos"
+                      ></app-badge-list>
+                    </div>
+                  </div>
+
+                  <div class="grid grid-cols-1 col-span-2">
+                    <div class="px-4 py-2 font-semibold">Cursos</div>
+                    <div class="px-4 py-2">
+                      <app-badge-list [items]="inscripcion.alumno?.cursos"></app-badge-list>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<ng-template #nada>
+  <div class="flex flex-col -mx-4 sm:-mx-8 px-4 sm:px-8">
+    <div class="flex flex-row justify-center p-2">
+      <div
+        class="w-full px-5 py-3 text-danger-300 uppercase font-medium text-center"
+      >
+        No hay curso seleccionado
+      </div>
+    </div>
+  </div>
+</ng-template>

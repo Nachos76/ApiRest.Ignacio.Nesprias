@@ -1,0 +1,10 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+@import './app/theme/theme.scss';
+@include cust-theme($custom-light-theme);
+
+html, body { height: 100%; }
+body { margin: 0; font-family: 'Montserrat', sans-serif, "Helvetica Neue", sans-serif; }
+* { font-family: 'Montserrat', sans-serif, "Helvetica Neue", sans-serif; }
