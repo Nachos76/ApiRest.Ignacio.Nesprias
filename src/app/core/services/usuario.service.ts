@@ -91,31 +91,6 @@ export class UsuarioService {
     this.usuarios$.next(this.listaUsuarios);
   }
 
-  // buscarUsuarioxNombre(nombre: string) {
-  //   return of(this.listaUsuarios).pipe(
-  //     map((usuarios) =>
-  //       usuarios.filter((usuario) =>
-  //         (
-  //           usuario.nombre +
-  //           ' ' +
-  //           usuario.apellido +
-  //           ' ' +
-  //           usuario.email +
-  //           ' ' +
-  //           usuario.rol +
-  //           ' ' +
-  //           usuario.id
-  //         )
-  //           .toLowerCase()
-  //           .includes(nombre.toLowerCase())
-  //       )
-  //     ),
-  //     catchError((error) => {
-  //       throw new Error(error);
-  //     })
-  //   );
-  // }
-
   obtenerUsuarioLogueado() {
     return new Promise<Usuario>((resolve, reject) => {
       if (this.listaUsuarios[1]) {

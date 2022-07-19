@@ -12,6 +12,7 @@ import { MaterialModule } from '../modules/material.module';
 import { VisEstadoPipe } from './pipes/vis-estado.pipe';
 import { VisRolesPipe } from './pipes/vis-roles.pipe';
 import { GrillaComponent } from './components/grilla/grilla.component';
+import { RolesPermitidosDirective } from './directives/roles-permitidos.directive';
 
 
 
@@ -28,7 +29,8 @@ import { GrillaComponent } from './components/grilla/grilla.component';
     TituloGrillaComponent,
     VisEstadoPipe,
     VisRolesPipe,
-    GrillaComponent
+    GrillaComponent,
+    RolesPermitidosDirective
 
   ],
   imports: [
@@ -46,7 +48,8 @@ import { GrillaComponent } from './components/grilla/grilla.component';
     TituloGrillaComponent,
     VisEstadoPipe,
     VisRolesPipe,
-    GrillaComponent
+    GrillaComponent,
+    RolesPermitidosDirective
   ]
 })
 export class SharedModule { }

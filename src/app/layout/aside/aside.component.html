@@ -23,11 +23,11 @@
         <mat-icon aria-label="Listado de cursos" class="mr-3">draw</mat-icon>
         Inscripciones
       </button>
-      <button mat-list-item routerLink="usuarios">
+      <button mat-list-item routerLink="usuarios" appRolesPermitidos [roles]="[roles.ADMIN]">
         <mat-icon aria-label="Listado de cursos" class="mr-3">group</mat-icon>
         Usuarios
       </button>
-      <button mat-list-item (click)="drawer.toggle()">
+      <button mat-list-item (click)="drawer.toggle()" >
         <mat-icon aria-label="Listado de cursos" class="mr-3">close</mat-icon>
         Cerrar
       </button>

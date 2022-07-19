@@ -1,9 +1,20 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
-import { tap, map, Observable, Subscription } from 'rxjs';
+import {
+  tap,
+  take,
+  takeUntil,
+  filter,
+  distinctUntilChanged,
+  debounceTime,
+  map,
+  Observable,
+  Subscription,
+  Subject,
+} from 'rxjs';
 import { CursosService } from 'src/app/core/services/cursos.service';
 import { Curso } from 'src/app/models/curso.model';
 import { ConfirmDialogComponent } from 'src/app/shared/components/Dialogs/confirm-dialog/confirm-dialog.component';
@@ -12,7 +23,6 @@ import { ConfirmDialogComponent } from 'src/app/shared/components/Dialogs/confir
   selector: 'app-listado-cursos',
   templateUrl: './listado-cursos.component.html',
   styleUrls: ['./listado-cursos.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ListadoCursosComponent implements OnInit {
   titulo: string = 'Listado de Cursos';
@@ -27,7 +37,7 @@ export class ListadoCursosComponent implements OnInit {
     'actions',
   ];
   tableDataSource$: Observable<MatTableDataSource<Curso>> | undefined;
-
+  destroy$: Subject<boolean> = new Subject<boolean>();
   buscador = new FormControl();
 
   susbcriptions: Subscription = new Subscription();
@@ -37,30 +47,45 @@ export class ListadoCursosComponent implements OnInit {
     private dialog: MatDialog,
     private router: Router
   ) {
-    this.tableDataSource$ = this.cursosService
-      .obtenerCursos()
-      .pipe(map((cursos) => new MatTableDataSource<Curso>(cursos)));
+    this.obtenerCursos();
+    // this.tableDataSource$ = this.cursosService
+    //   .obtenerCursos()
+    //   .pipe(map((cursos) => new MatTableDataSource<Curso>(cursos)));
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next(true);
+    // Unsubscribe from the subject
+    this.destroy$.unsubscribe();
   }
 
   ngOnInit(): void {
-    this.buscador.valueChanges.subscribe((nombre: string) => {
-      this.tableDataSource$ = this.cursosService
-        .obtenerCursos(nombre)
-        .pipe(map((curso) => new MatTableDataSource<Curso>(curso)));
-    });
+    this.buscador.valueChanges
+      .pipe(
+        filter((res) => res.length > 2 || res.length === 0),
+        debounceTime(500),
+        distinctUntilChanged(),
+        takeUntil(this.destroy$)
+      )
+      .subscribe((nombre: string) => {
+        this.obtenerCursos(nombre);
+        // this.tableDataSource$ = this.cursosService
+        //   .obtenerCursos(nombre)
+        //   .pipe(map((curso) => new MatTableDataSource<Curso>(curso)));
+      });
   }
 
   agregar() {
-    this.cursosService.seleccionarCursoxIndice(-1);
+    //this.cursosService.seleccionarCursoxIndice(-1);
     this.router.navigate(['/cursos/form']);
   }
 
-  seleccionar(index?: number) {
-    this.cursosService.seleccionarCursoxId(index);
-    this.router.navigate(['/cursos/detalle']);
+  seleccionar(id: number) {
+    //this.cursosService.seleccionarCursoxId(index);
+    this.router.navigate(['/cursos/detalle/'+id]);
   }
 
-  eliminar(item?: Curso) {
+  eliminar(item: Curso) {
     const dialogConfig = new MatDialogConfig();
     dialogConfig.data = {
       title: 'Confirmar borrado',
@@ -72,13 +97,32 @@ export class ListadoCursosComponent implements OnInit {
     );
     confirmDialog.afterClosed().subscribe((result) => {
       if (result === true) {
-        this.cursosService.borrarCursoporId(item?.id);
+        this.cursosService
+          .borrarCursoxId(item.id)
+          .pipe(take(1))
+          .subscribe({
+            next: (data) => {
+              console.log(data);
+            },
+            error: (e) => console.error(e),
+            complete: () => this.obtenerCursos()
+              // (this.tableDataSource$ = this.cursosService.obtenerCursos().pipe(
+              //   tap((cursos) => console.log(cursos)),
+              //   map((cursos) => new MatTableDataSource<Curso>(cursos))
+              // )),
+          });
       }
     });
   }
 
-  editar(index?: number) {
-    this.cursosService.seleccionarCursoxId(index);
-    this.router.navigate(['/cursos/form']);
+  obtenerCursos(nombre?: string) {
+    this.tableDataSource$ = this.cursosService.obtenerCursos(nombre).pipe(
+      map((cursos) => new MatTableDataSource<Curso>(cursos))
+    );
+  }
+
+  editar(id: number) {
+    //this.cursosService.seleccionarCursoxId(index);
+    this.router.navigate(['/cursos/form/'+id]);
   }
 }

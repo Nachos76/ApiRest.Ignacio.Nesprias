@@ -9,7 +9,7 @@ import { Alumno } from 'src/app/models/alumno.model';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { AlumnosService } from 'src/app/core/services/alumnos.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -34,7 +34,7 @@ export class FormularioAlumnoComponent implements OnInit {
       '',
       [
         Validators.required,
-        Validators.pattern('[a-z0-9._%+-]+@[a-z0-9.-]+.[a-z]{2,3}$'),
+        Validators.pattern('[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,3}$'),
       ],
     ],
     conocimientos: [[]],
@@ -57,7 +57,8 @@ export class FormularioAlumnoComponent implements OnInit {
     private alumnosService: AlumnosService,
     private fb: FormBuilder,
     private router: Router,
-    private alumnosServices: AlumnosService
+    private alumnosServices: AlumnosService,
+    private activatedRoute: ActivatedRoute
   ) {
     // this.local_data = { ...data };
     // //this.alumno = this.local_data.item;
@@ -70,19 +71,40 @@ export class FormularioAlumnoComponent implements OnInit {
 
   ngOnInit(): void {
     this.susbcriptions.add(
-      this.alumnosService.obtenerAlumnoSeleccionado().subscribe({
-        next: (alumno) => {
-          if (alumno) {
-            this.formularioAlumno.patchValue(alumno);
-          } else {
-            this.formularioAlumno.reset();
-          }
-        },
-        error: (error) => {
-          console.error(error);
-        },
+      this.activatedRoute.params.subscribe((param) => {
+        //this.activatedRoute.snapshot.params['id']  //otra forma de obtener el parametro
+        if (Number(param['id']))
+          this.alumnosService
+            .seleccionarAlumnoxId(Number(param['id']))
+            .subscribe({
+              next: (alumno) => {
+                if (alumno) {
+                  this.formularioAlumno.patchValue(alumno);
+                } else {
+                  this.formularioAlumno.reset();
+                }
+              },
+              error: (error) => {
+                console.error(error);
+              },
+            });
       })
     );
+
+    // this.susbcriptions.add(
+    //   this.alumnosService.obtenerAlumnoSeleccionado().subscribe({
+    //     next: (alumno) => {
+    //       if (alumno) {
+    //         this.formularioAlumno.patchValue(alumno);
+    //       } else {
+    //         this.formularioAlumno.reset();
+    //       }
+    //     },
+    //     error: (error) => {
+    //       console.error(error);
+    //     },
+    //   })
+    // );
   }
 
   // passwordMatchValidator(g: AbstractControl) {
@@ -100,20 +122,53 @@ export class FormularioAlumnoComponent implements OnInit {
     this.router.navigate(['/alumnos']);
   }
 
+  // agregarUsuario(alumno: Alumno) {
+  //   if (alumno.id) {
+  //     //es usuario existente
+  //     this.alumnosServices.editarAlumno(alumno);
+  //   } else {
+  //     //es nuevo usuario
+  //     alumno.id = this.alumnosServices.obtenerSiguienteId();
+  //     alumno.estado=1
+  //     this.alumnosServices.agregarAlumno(alumno);
+  //   }
+  //   this.router.navigate(['/alumnos']);
+  //   this.formularioAlumno.reset();
+  // }
+
   agregarUsuario(alumno: Alumno) {
     if (alumno.id) {
       //es usuario existente
-      this.alumnosServices.editarAlumno(alumno);
+      this.susbcriptions.add(
+        this.alumnosServices.editarAlumno(alumno).subscribe({
+          next: (alumno) => {
+            console.log(alumno);
+            this.router.navigate(['/alumnos']);
+            this.formularioAlumno.reset();
+          },
+          error: (error) => {
+            console.error(error);
+          },
+        })
+      );
     } else {
       //es nuevo usuario
-      alumno.id = this.alumnosServices.obtenerSiguienteId();
-      alumno.estado=1
-      this.alumnosServices.agregarAlumno(alumno);
+      //curso.id = this.cursosService.obtenerSiguienteId();
+      this.susbcriptions.add(
+        this.alumnosServices.agregarAlumno(alumno).subscribe({
+          next: (alumno) => {
+            console.log(alumno);
+            this.router.navigate(['/alumnos']);
+            this.formularioAlumno.reset();
+          },
+          error: (error) => {
+            console.error(error);
+          },
+        })
+      );
     }
-    this.router.navigate(['/alumnos']);
-    this.formularioAlumno.reset();
+    
   }
-
 
   addOnBlur = true;
   readonly separatorKeysCodes = [ENTER, COMMA] as const;

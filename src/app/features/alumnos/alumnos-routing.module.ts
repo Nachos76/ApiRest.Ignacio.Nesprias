@@ -8,8 +8,9 @@ import { ListadoAlumnosComponent } from './listado-alumnos/listado-alumnos.compo
 
 const routes: Routes = [
   { path: '', component: ListadoAlumnosComponent },
+  { path: 'form/:id', component: FormularioAlumnoComponent},
   { path: 'form', component: FormularioAlumnoComponent},
-  { path: 'detalle', component: DetalleAlumnoComponent}];
+  { path: 'detalle/:id', component: DetalleAlumnoComponent}];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],

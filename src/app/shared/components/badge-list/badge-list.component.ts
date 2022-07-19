@@ -15,8 +15,9 @@ export class BadgeListComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  retornarColor(element:string)  {
-      switch (element.toLowerCase()) {  
+  retornarColor(element:any)  {
+      let result = typeof element !== "string" ? element.toString() : element;
+      switch (result.toLowerCase()) {  
         case  "javascript": 
           this.color="yelow"
           break

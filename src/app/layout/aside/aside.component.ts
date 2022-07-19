@@ -3,6 +3,7 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Observable } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
 import { MatSidenav } from '@angular/material/sidenav';
+import { Roles } from '../../models/roles.enum';
 
 @Component({
   selector: 'app-aside',
@@ -18,6 +19,10 @@ export class AsideComponent implements OnInit {
     );
 
   @ViewChild('drawer', {static: false}) drawer?: MatSidenav;
+
+  roles = Roles;
+
+
   constructor(private breakpointObserver: BreakpointObserver) {}
 
   ngOnInit(): void {

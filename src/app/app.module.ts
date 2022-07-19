@@ -28,6 +28,10 @@ import { LayoutModule } from './layout/layout.module';
 
 import localeEs from '@angular/common/locales/es';
 import { registerLocaleData } from '@angular/common';
+import { HttpClientModule } from '@angular/common/http';
+
+import { MainLayoutComponent } from './pages/main-layout/main-layout.component';
+import { LoginLayoutComponent } from './pages/login-layout/login-layout.component';
 registerLocaleData(localeEs, 'es');
 @NgModule({
   declarations: [
@@ -37,9 +41,12 @@ registerLocaleData(localeEs, 'es');
     AsideComponent,
     MainComponent,
     NavigationComponent,
+    MainLayoutComponent,
+    LoginLayoutComponent
   ],
   imports: [
     CommonModule,
+    HttpClientModule,
     AppRoutingModule,
     BrowserAnimationsModule,
     MaterialModule,

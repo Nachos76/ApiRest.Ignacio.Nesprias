@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { map, Observable, Subscription } from 'rxjs';
 import { AlumnosService } from 'src/app/core/services/alumnos.service';
 import { InscripcionesService } from 'src/app/core/services/inscripciones.service';
@@ -35,7 +35,8 @@ export class DetalleAlumnoComponent implements OnInit {
     private alumnosService: AlumnosService,
     private inscripcionesService: InscripcionesService,
     private dialog: MatDialog,
-    private router: Router
+    private router: Router,
+    private activatedRoute: ActivatedRoute
   ) {
   }
 
@@ -44,24 +45,52 @@ export class DetalleAlumnoComponent implements OnInit {
   }
   ngOnInit(): void {
     this.susbcriptions.add(
-      this.alumnosService.obtenerAlumnoSeleccionado().subscribe({
-        next: (alumno) => {
-          if (alumno) {
-            this.alumno = alumno;
-            this.tableDataSource$ = this.inscripcionesService
-            .obtenerInscripcionesxAlumno(this.alumno?.id)
-            .pipe(
-              map((inscripcion) => new MatTableDataSource<Inscripcion>(inscripcion))
-            );
-          } else {
-            this.alumno = undefined;
-          }
-        },
-        error: (error) => {
-          console.error(error);
-        },
+      this.activatedRoute.params.subscribe((param) => {
+        //this.activatedRoute.snapshot.params['id']  //otra forma de obtener el parametro
+        this.alumnosService.seleccionarAlumnoxId(Number(param['id'])).subscribe({
+          next: (alumno) => {
+            if (alumno) {
+              this.alumno = alumno;
+              this.tableDataSource$ = this.inscripcionesService
+                .obtenerInscripcionesxCurso(this.alumno?.id)
+                .pipe(
+                  map(
+                    (inscripcion) =>
+                      new MatTableDataSource<Inscripcion>(inscripcion)
+                  )
+                );
+            } else {
+              this.alumno = undefined;
+            }
+          },
+          error: (error) => {
+            console.error(error);
+          },
+        });
       })
     );
+
+
+
+    // this.susbcriptions.add(
+    //   this.alumnosService.obtenerAlumnoSeleccionado().subscribe({
+    //     next: (alumno) => {
+    //       if (alumno) {
+    //         this.alumno = alumno;
+    //         this.tableDataSource$ = this.inscripcionesService
+    //         .obtenerInscripcionesxAlumno(this.alumno?.id)
+    //         .pipe(
+    //           map((inscripcion) => new MatTableDataSource<Inscripcion>(inscripcion))
+    //         );
+    //       } else {
+    //         this.alumno = undefined;
+    //       }
+    //     },
+    //     error: (error) => {
+    //       console.error(error);
+    //     },
+    //   })
+    // );
 
     
 
@@ -77,6 +106,7 @@ export class DetalleAlumnoComponent implements OnInit {
   reemplazarURL(str?: string | null) {
     return str?.replace('https://getavataaars.com/', 'https://avataaars.io/');
   }
+  
   volver(): void {
     this.router.navigate(['/alumnos']);
   }

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { map, Observable, Subscription } from 'rxjs';
 import { CursosService } from 'src/app/core/services/cursos.service';
 import { InscripcionesService } from 'src/app/core/services/inscripciones.service';
@@ -19,15 +19,16 @@ export class DetalleCursosComponent implements OnInit {
   susbcriptions: Subscription = new Subscription();
   curso?: Curso;
 
-  displayedColumnsTable = ['id', 'nombre', 'descripcion','actions'];
+  displayedColumnsTable = ['id', 'nombre', 'descripcion', 'actions'];
   tableDataSource$: Observable<MatTableDataSource<Inscripcion>> | undefined;
   buscador = new FormControl();
 
   constructor(
-    private cursoService: CursosService,
+    private cursosService: CursosService,
     private router: Router,
     private inscripcionesService: InscripcionesService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private activatedRoute: ActivatedRoute
   ) {}
 
   ngOnDestroy() {
@@ -36,25 +37,28 @@ export class DetalleCursosComponent implements OnInit {
 
   ngOnInit(): void {
     this.susbcriptions.add(
-      this.cursoService.obtenerCursoSeleccionado().subscribe({
-        next: (curso) => {
-          if (curso) {
-            this.curso = curso;
-            this.tableDataSource$ = this.inscripcionesService
-              .obtenerInscripcionesxCurso(this.curso?.id)
-              .pipe(
-                map(
-                  (inscripcion) =>
-                    new MatTableDataSource<Inscripcion>(inscripcion)
-                )
-              );
-          } else {
-            this.curso = undefined;
-          }
-        },
-        error: (error) => {
-          console.error(error);
-        },
+      this.activatedRoute.params.subscribe((param) => {
+        //this.activatedRoute.snapshot.params['id']  //otra forma de obtener el parametro
+        this.cursosService.seleccionarCursoxId(Number(param['id'])).subscribe({
+          next: (curso) => {
+            if (curso) {
+              this.curso = curso;
+              this.tableDataSource$ = this.inscripcionesService
+                .obtenerInscripcionesxCurso(this.curso?.id)
+                .pipe(
+                  map(
+                    (inscripcion) =>
+                      new MatTableDataSource<Inscripcion>(inscripcion)
+                  )
+                );
+            } else {
+              this.curso = undefined;
+            }
+          },
+          error: (error) => {
+            console.error(error);
+          },
+        });
       })
     );
 
@@ -70,6 +74,7 @@ export class DetalleCursosComponent implements OnInit {
   volver(): void {
     this.router.navigate(['/cursos']);
   }
+
   eliminar(item?: Inscripcion) {
     const dialogConfig = new MatDialogConfig();
     dialogConfig.data = {

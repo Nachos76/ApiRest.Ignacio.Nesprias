@@ -119,7 +119,8 @@ const bgPalette = {
     900: '#202020'
   }
 };
-
+const plugin = require('tailwindcss/plugin')
+//import plugin from 'tailwindcss/plugin';
 module.exports = {
   content: ["./src/**/*.{html,ts}"],
   darkMode: 'class',
@@ -135,7 +136,23 @@ module.exports = {
       ringColor: paletteTheme,
       ringOffsetColor: paletteTheme,
       textColor: Object.assign({ ...paletteTheme }, bgPalette),
+      textShadow: {
+        sm: '0 1px 2px var(--tw-shadow-color)',
+        DEFAULT: '0 2px 4px var(--tw-shadow-color)',
+        lg: '0 8px 16px var(--tw-shadow-color)',
+      }
     },
   },
-  plugins: [],
+  plugins: [
+    plugin(function ({ matchUtilities, theme }) {
+      matchUtilities(
+        {
+          'text-shadow': (value) => ({
+            textShadow: value,
+          }),
+        },
+        { values: theme('textShadow') }
+      )
+    }),
+  ],
 }

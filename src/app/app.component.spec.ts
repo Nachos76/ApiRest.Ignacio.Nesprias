@@ -2,15 +2,31 @@ import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AppComponent } from './app.component';
 
-describe('AppComponent', () => {
+import { MockModule } from 'ng-mocks';
+import { AuthModule } from './core/auth/auth.module';
+import { LayoutModule } from '@angular/cdk/layout';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule } from '@angular/forms';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MaterialModule } from './modules/material.module';
+import { SharedModule } from './shared/shared.module';
+
+fdescribe('AppComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
-        RouterTestingModule
+        RouterTestingModule,
+        MockModule(AuthModule),
+
+        MockModule(CommonModule),
+
+        MockModule(BrowserAnimationsModule),
+        MockModule(MaterialModule),
+        MockModule(ReactiveFormsModule),
+        MockModule(SharedModule),
+        MockModule(LayoutModule),
       ],
-      declarations: [
-        AppComponent
-      ],
+      declarations: [AppComponent],
     }).compileComponents();
   });
 
@@ -30,6 +46,8 @@ describe('AppComponent', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('.content span')?.textContent).toContain('ApiRest.Ignacio.Nesprias app is running!');
+    expect(compiled.querySelector('.hidden')?.textContent).toContain(
+      'GreenCoder'
+    );
   });
 });
