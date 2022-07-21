@@ -3,7 +3,7 @@ import { FormControl } from '@angular/forms';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
-import { tap, map, Observable, Subscription } from 'rxjs';
+import { take,distinctUntilChanged, filter, takeUntil, debounceTime, map, Observable, Subscription, Subject } from 'rxjs';
 import { Inscripcion } from 'src/app/models/inscripcion.model';
 import { ConfirmDialogComponent } from 'src/app/shared/components/Dialogs/confirm-dialog/confirm-dialog.component';
 import { InscripcionesService } from '../../../core/services/inscripciones.service';
@@ -26,45 +26,53 @@ export class ListadoInscripcionesComponent implements OnInit {
   tableDataSource$: Observable<MatTableDataSource<Inscripcion>> | undefined;
   buscador = new FormControl();
   susbcriptions: Subscription = new Subscription();
-
+  destroy$: Subject<boolean> = new Subject<boolean>();
+  
   constructor(
     private inscripcionesService: InscripcionesService,
     private dialog: MatDialog,
     private router: Router
   ) {
-    this.tableDataSource$ = this.inscripcionesService
-      .obtenerInscripciones()
-      .pipe(
-        tap((inscripcion) => console.log(inscripcion)),
-        map((inscripcion) => new MatTableDataSource<Inscripcion>(inscripcion))
-      );
+    this.obtenerInscripciones()
   }
 
+  ngOnDestroy() {
+    this.destroy$.next(true);
+    // Unsubscribe from the subject
+    this.destroy$.unsubscribe();
+  }
   ngOnInit(): void {
-    this.buscador.valueChanges.subscribe((nombre: string) => {
-      this.tableDataSource$ = this.inscripcionesService
-        .obtenerInscripciones(nombre)
-        .pipe(
-          map((inscripcion) => new MatTableDataSource<Inscripcion>(inscripcion))
-        );
+    this.buscador.valueChanges
+    .pipe(
+      filter((res) => res.length > 2 || res.length === 0),
+      debounceTime(500),
+      distinctUntilChanged(),
+      takeUntil(this.destroy$)
+    )
+    .subscribe((nombre: string) => {
+      this.obtenerInscripciones(nombre)
     });
   }
 
+  obtenerInscripciones(nombre?: string) {
+    this.tableDataSource$ = this.inscripcionesService.obtenerInscripciones(nombre).pipe(
+      map((inscripciones) => new MatTableDataSource<Inscripcion>(inscripciones))
+    );
+  }
+
   agregar() {
-    this.inscripcionesService.seleccionarInscripcionxIndice(-1);
     this.router.navigate(['/inscripciones/form']);
   }
 
-  seleccionar(id?: number) {
-    this.inscripcionesService.seleccionarInscripcionxId(id);
-    this.router.navigate(['/inscripciones/detalle']);
+  seleccionar(id: number) {
+    this.router.navigate(['/inscripciones/detalle/'+id]);
   }
 
-  eliminar(item?: Inscripcion) {
+  eliminar(item: Inscripcion) {
     const dialogConfig = new MatDialogConfig();
     dialogConfig.data = {
       title: 'Confirmar borrado',
-      message: 'Esta seguro que desea eliminar el registro de ' + item?.alumno.nombre + ' ' + item?.alumno.apellido + ' del curso ' + item?.curso.nombre,
+      message: 'Esta seguro que desea eliminar el registro de ' + item?.alumno?.nombre + ' ' + item?.alumno?.apellido + ' del curso ' + item?.curso?.nombre,
     };
     const confirmDialog = this.dialog.open(
       ConfirmDialogComponent,
@@ -72,14 +80,22 @@ export class ListadoInscripcionesComponent implements OnInit {
     );
     confirmDialog.afterClosed().subscribe((result) => {
       if (result === true) {
-        this.inscripcionesService.borrarInscripcionporId(item?.id);
+        this.inscripcionesService
+          .borrarInscripcionxId(item.id)
+          .pipe(take(1))
+          .subscribe({
+            next: (data) => {
+              console.log(data);
+            },
+            error: (e) => console.error(e),
+            complete: () => this.obtenerInscripciones()
+          });
       }
     });
   }
 
-  editar(id?: number) {
-    this.inscripcionesService.seleccionarInscripcionxId(id);
-    this.router.navigate(['/inscripciones/form']);
+  editar(id: number) {
+    this.router.navigate(['/inscripciones/form/'+id]);
   }
 
 }

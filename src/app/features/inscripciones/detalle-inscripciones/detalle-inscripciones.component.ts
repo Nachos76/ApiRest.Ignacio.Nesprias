@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { AlumnosService } from '@app/core/services/alumnos.service';
+import { CursosService } from '@app/core/services/cursos.service';
 import { Subscription } from 'rxjs';
 import { InscripcionesService } from 'src/app/core/services/inscripciones.service';
 import { Inscripcion } from '../../../models/inscripcion.model';
@@ -11,13 +13,16 @@ import { Inscripcion } from '../../../models/inscripcion.model';
 export class DetalleInscripcionesComponent implements OnInit {
   titulo: string = 'Detalles de la inscripción';
   susbcriptions: Subscription = new Subscription();
-  inscripcion?: Inscripcion;
+  inscripcion!: Inscripcion;
 
   defaultImagen : string = 'assets/logo/green-coder-logo.png'
 
   constructor(
     private inscripcionesService: InscripcionesService, 
-    private router: Router
+    private router: Router,
+    private activatedRoute: ActivatedRoute,
+    private cursosService: CursosService, 
+    private alumnosService: AlumnosService
   ) { }
 
   ngOnDestroy() {
@@ -26,19 +31,24 @@ export class DetalleInscripcionesComponent implements OnInit {
 
   ngOnInit(): void {
     this.susbcriptions.add(
-      this.inscripcionesService.obtenerInscripcionSeleccionado().subscribe({
-        next: (inscripcion) => {
-          if (inscripcion) {
-            this.inscripcion = inscripcion;
-          } else {
-            this.inscripcion = undefined;
-          }
-        },
-        error: (error) => {
-          console.error(error);
-        },
+      this.activatedRoute.params.subscribe((param) => {
+        //this.activatedRoute.snapshot.params['id']  //otra forma de obtener el parametro
+        this.inscripcionesService.seleccionarInscripcionxId(Number(param['id'])).subscribe({
+          next: (inscripcion) => {
+            if (inscripcion) {
+              this.inscripcion = inscripcion;       
+            } 
+            else {
+              this.inscripcion;// = undefined;
+            }
+          },
+          error: (error) => {
+            console.error(error);
+          },
+        });
       })
     );
+
   }
 
   volver(): void {

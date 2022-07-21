@@ -5,7 +5,7 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { UsuarioService } from 'src/app/core/services/usuario.service';
 import { Usuario } from 'src/app/models/usuario.model';
@@ -14,7 +14,6 @@ import { Usuario } from 'src/app/models/usuario.model';
   selector: 'app-formulario-usuarios',
   templateUrl: './formulario-usuarios.component.html',
   styleUrls: ['./formulario-usuarios.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FormularioUsuariosComponent implements OnInit {
   titulo: string = 'Ingresar nuevo usuario';
@@ -30,7 +29,7 @@ export class FormularioUsuariosComponent implements OnInit {
         '',
         [
           Validators.required,
-          Validators.pattern('[a-z0-9._%+-]+@[a-z0-9.-]+.[a-z]{2,3}$'),
+          Validators.pattern('[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,3}$'),
         ],
       ],
       imagen: [''],
@@ -44,7 +43,8 @@ export class FormularioUsuariosComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private usuarioService: UsuarioService
+    private usuarioService: UsuarioService,
+    private activatedRoute: ActivatedRoute
   ) {}
 
   ngOnDestroy() {
@@ -53,19 +53,26 @@ export class FormularioUsuariosComponent implements OnInit {
 
   ngOnInit(): void {
     this.susbcriptions.add(
-      this.usuarioService.obtenerUsuarioSeleccionado().subscribe({
-        next: (usuario) => {
-          if (usuario) {
-            this.formulario.patchValue(usuario);
-          } else {
-            this.formulario.reset();
-          }
-        },
-        error: (error) => {
-          console.error(error);
-        },
+      this.activatedRoute.params.subscribe((param) => {
+        //this.activatedRoute.snapshot.params['id']  //otra forma de obtener el parametro
+        if (Number(param['id']))
+          this.usuarioService
+            .seleccionarUsuarioxId(Number(param['id']))
+            .subscribe({
+              next: (usuario) => {
+                if (usuario) {
+                  this.formulario.patchValue(usuario);
+                } else {
+                  this.formulario.reset();
+                }
+              },
+              error: (error) => {
+                console.error(error);
+              },
+            });
       })
     );
+
   }
 
   passwordMatchValidator(g: AbstractControl) {
@@ -82,6 +89,39 @@ export class FormularioUsuariosComponent implements OnInit {
   agregarUsuario(usuario: Usuario) {
     if (usuario.id) {
       //es usuario existente
+      this.susbcriptions.add(
+        this.usuarioService.editarUsuario(usuario).subscribe({
+          next: (usuario) => {
+            console.log(usuario);
+            this.router.navigate(['/usuarios']);
+            this.formulario.reset();
+          },
+          error: (error) => {
+            console.error(error);
+          },
+        })
+      );
+    } else {
+      //es nuevo usuario
+      this.susbcriptions.add(
+        this.usuarioService.agregarUsuario(usuario).subscribe({
+          next: (usuario) => {
+            console.log(usuario);
+            this.router.navigate(['/usuarios']);
+            this.formulario.reset();
+          },
+          error: (error) => {
+            console.error(error);
+          },
+        })
+      );
+    }
+    
+  }
+
+  agregarUsuarioOri(usuario: Usuario) {
+    if (usuario.id) {
+      //es usuario existente
       this.usuarioService.editarUsuario(usuario);
     } else {
       //es nuevo usuario
@@ -92,6 +132,7 @@ export class FormularioUsuariosComponent implements OnInit {
     this.formulario.reset();
   }
 
+  
   volver(): void {
     this.router.navigate(['/usuarios']);
   }

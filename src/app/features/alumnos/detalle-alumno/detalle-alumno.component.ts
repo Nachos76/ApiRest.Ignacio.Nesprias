@@ -3,7 +3,7 @@ import { FormControl } from '@angular/forms';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
 import { ActivatedRoute, Router } from '@angular/router';
-import { map, Observable, Subscription } from 'rxjs';
+import { take, map, Observable, Subscription } from 'rxjs';
 import { AlumnosService } from 'src/app/core/services/alumnos.service';
 import { InscripcionesService } from 'src/app/core/services/inscripciones.service';
 import { Alumno } from 'src/app/models/alumno.model';
@@ -51,14 +51,7 @@ export class DetalleAlumnoComponent implements OnInit {
           next: (alumno) => {
             if (alumno) {
               this.alumno = alumno;
-              this.tableDataSource$ = this.inscripcionesService
-                .obtenerInscripcionesxCurso(this.alumno?.id)
-                .pipe(
-                  map(
-                    (inscripcion) =>
-                      new MatTableDataSource<Inscripcion>(inscripcion)
-                  )
-                );
+              this.obtenerCursos(this.alumno!.id)
             } else {
               this.alumno = undefined;
             }
@@ -71,35 +64,8 @@ export class DetalleAlumnoComponent implements OnInit {
     );
 
 
-
-    // this.susbcriptions.add(
-    //   this.alumnosService.obtenerAlumnoSeleccionado().subscribe({
-    //     next: (alumno) => {
-    //       if (alumno) {
-    //         this.alumno = alumno;
-    //         this.tableDataSource$ = this.inscripcionesService
-    //         .obtenerInscripcionesxAlumno(this.alumno?.id)
-    //         .pipe(
-    //           map((inscripcion) => new MatTableDataSource<Inscripcion>(inscripcion))
-    //         );
-    //       } else {
-    //         this.alumno = undefined;
-    //       }
-    //     },
-    //     error: (error) => {
-    //       console.error(error);
-    //     },
-    //   })
-    // );
-
-    
-
     this.buscador.valueChanges.subscribe((nombre: string) => {
-      this.tableDataSource$ = this.inscripcionesService
-      .obtenerInscripcionesxAlumno(this.alumno?.id, nombre)
-        .pipe(
-          map((inscripcion) => new MatTableDataSource<Inscripcion>(inscripcion))
-        );
+      this.obtenerCursos(this.alumno!.id, nombre)
     });
   }
 
@@ -111,11 +77,11 @@ export class DetalleAlumnoComponent implements OnInit {
     this.router.navigate(['/alumnos']);
   }
 
-  eliminar(item?: Inscripcion) {
+  eliminar(item: Inscripcion) {
     const dialogConfig = new MatDialogConfig();
     dialogConfig.data = {
       title: 'Confirmar borrado',
-      message: 'Esta seguro que desea eliminar el registro de ' + item?.alumno.nombre + ' ' + item?.alumno.apellido + ' del curso ' + item?.curso.nombre,
+      message: 'Esta seguro que desea eliminar el registro de ' + item?.alumno?.nombre + ' ' + item?.alumno?.apellido + ' del curso ' + item?.curso?.nombre,
     };
     const confirmDialog = this.dialog.open(
       ConfirmDialogComponent,
@@ -123,8 +89,28 @@ export class DetalleAlumnoComponent implements OnInit {
     );
     confirmDialog.afterClosed().subscribe((result) => {
       if (result === true) {
-        this.inscripcionesService.borrarInscripcionporId(item?.id);
+        this.inscripcionesService
+          .borrarInscripcionxId(item.id)
+          .pipe(take(1))
+          .subscribe({
+            next: (data) => {
+              console.log(data);
+            },
+            error: (e) => console.error(e),
+            complete: () => this.obtenerCursos(this.alumno!.id),
+          });
       }
     });
+  }
+
+
+  obtenerCursos(id: number, nombre?: string) {
+    this.tableDataSource$ = this.inscripcionesService
+      .obtenerInscripcionesxAlumno(id, nombre)
+      .pipe(
+        map(
+          (inscripciones) => new MatTableDataSource<Inscripcion>(inscripciones)
+        )
+      );
   }
 }

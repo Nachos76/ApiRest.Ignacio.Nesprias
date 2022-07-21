@@ -6,8 +6,9 @@ import { ListadoInscripcionesComponent } from './listado-inscripciones/listado-i
 
 const routes: Routes = [
   { path: '', component: ListadoInscripcionesComponent },
+  { path: 'form/:id', component: FormularioInscripcionesComponent},
   { path: 'form', component: FormularioInscripcionesComponent},
-  { path: 'detalle', component: DetalleInscripcionesComponent}
+  { path: 'detalle/:id', component: DetalleInscripcionesComponent}
 ];
 
 @NgModule({

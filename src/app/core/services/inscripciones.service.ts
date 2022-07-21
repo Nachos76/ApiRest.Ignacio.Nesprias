@@ -1,128 +1,116 @@
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, catchError, map, of, Subject } from 'rxjs';
+import { environment } from '@environments/environment';
+import { BehaviorSubject, catchError, map, Observable, of, Subject, throwError,retry } from 'rxjs';
 import { Inscripcion } from 'src/app/models/inscripcion.model';
 
 import { INSCRIPCIONES } from '../../data/mock-inscripciones';
+
 
 @Injectable({
   providedIn: 'root',
 })
 export class InscripcionesService {
+  private urlAPI = environment.urlAPI;//'https://62ce1cb7066bd2b6992ffea7.mockapi.io/api/v1/';
+
+
+
   listaInscripciones: Inscripcion[] = INSCRIPCIONES;
   inscripcionSeleccionado$ = new BehaviorSubject<Inscripcion | null>(null);
   inscripciones$ = new BehaviorSubject<Inscripcion[]>(this.listaInscripciones);
 
-  constructor() {}
-
-  agregarInscripcion(inscripcion: Inscripcion) {
-    this.listaInscripciones.push(inscripcion);
-    this.inscripciones$.next(this.listaInscripciones);
-  }
+  constructor(private http: HttpClient,) {}
 
   obtenerInscripciones(nombre?: string) {
-    return this.inscripciones$
-      .asObservable()
+    
+    return  this.http
+    .get<Inscripcion[]>(
+      this.urlAPI +
+        'inscripciones' +
+        (nombre ? '?search=' + nombre : '')
+    )
       .pipe(
-        map((inscripciones) =>
-          nombre
-            ? inscripciones.filter((inscripcion) =>
-                (inscripcion.curso.nombre + ' ' + inscripcion.curso.id)
-                  .toLowerCase()
-                  .includes(nombre.toLowerCase().trim())
-              )
-            : inscripciones
-        )
+        retry(3), 
+        catchError(this.errorHandler)
       );
   }
 
-  obtenerInscripcionSeleccionado() {
-    return this.inscripcionSeleccionado$.asObservable();
-  }
 
-  seleccionarInscripcionxIndice(index?: number) {
-    this.inscripcionSeleccionado$.next(
-      index !== undefined ? this.listaInscripciones[index] : null
+  seleccionarInscripcionxId(id: number): Observable<Inscripcion>{
+    return this.http.get<Inscripcion>(this.urlAPI +'inscripciones/'+id)
+    .pipe(
+      retry(3), 
+      catchError(this.errorHandler)
     );
   }
 
-  seleccionarInscripcionxId(id?: number) {
-    let index = this.listaInscripciones.findIndex((item) => item.id == id);
-    this.inscripcionSeleccionado$.next(
-      index !== undefined ? this.listaInscripciones[index] : null
+  borrarInscripcionxId(id: number){
+    return this.http.delete<Inscripcion>(this.urlAPI +'inscripciones/'+id)
+    .pipe(
+      retry(3), 
+      catchError(this.errorHandler)
     );
   }
 
-  borrarInscripcionporIndice(index?: number) {
-    this.listaInscripciones = this.listaInscripciones.filter(
-      (_, i) => index != i
+  editarInscripcion(inscripcion: Inscripcion){
+    return this.http.put(this.urlAPI +'inscripciones/'+inscripcion.id, inscripcion)
+    .pipe(
+      retry(3), 
+      catchError(this.errorHandler)
     );
-    this.inscripciones$.next(this.listaInscripciones);
   }
 
-  borrarInscripcionporId(id?: number) {
-    let index = this.listaInscripciones.findIndex((item) => item.id == id);
-    this.listaInscripciones = this.listaInscripciones.filter(
-      (_, i) => index != i
+  agregarInscripcion(inscripcion: Inscripcion){
+    return this.http.post(this.urlAPI +'inscripciones',inscripcion).pipe(
+      retry(3), 
+      catchError(this.errorHandler)
     );
-    this.inscripciones$.next(this.listaInscripciones);
   }
-
-  editarInscripcion(inscripcion: Inscripcion) {
-    let itemIndex = this.listaInscripciones.findIndex(
-      (item) => item.id == inscripcion.id
-    );
-    this.listaInscripciones[itemIndex] = inscripcion;
-    this.inscripciones$.next(this.listaInscripciones);
-  }
-
-  obtenerInscripcionesxAlumno(id?: number,nombre?: string) {
-    return this.inscripciones$
-      .asObservable()
-      .pipe(
-        map((inscripciones) =>
-            id
-            ? inscripciones.filter((inscripcion) =>
-                (inscripcion.alumno.id===id)
-              )
-            : undefined
-        ),
-        map((inscripciones) =>
-        nombre
-          ? inscripciones?.filter((inscripcion) =>
-              (inscripcion.curso.nombre + ' ' + inscripcion.curso.id)
-                .toLowerCase()
-                .includes(nombre.toLowerCase().trim())
-            )
-          : inscripciones
-      )
-      );
-  }
-
+//MockApi no permite buscar por un elemento hijo, asi que las busquedas son sobre todas las inscripciones lamentablemente,, pero esta la idea
   obtenerInscripcionesxCurso(id?: number, nombre?: string) {
-    return this.inscripciones$
-      .asObservable()
+    return  this.http
+    .get<Inscripcion[]>(
+      this.urlAPI +
+        'inscripciones?cursoId=' + id +
+        (nombre ? '&nombre=' + nombre : '')
+        +
+        (nombre ? '&apellido=' + nombre : '')
+    )
       .pipe(
-        map((inscripciones) =>
-            id
-            ? inscripciones.filter((inscripcion) =>
-                (inscripcion.curso.id===id)
-              )
-            : undefined
-        ),
-        map((inscripciones) =>
-        nombre
-          ? inscripciones?.filter((inscripcion) =>
-              (inscripcion.alumno.nombre + ' '  + inscripcion.alumno.apellido + ' ' + inscripcion.alumno.id)
-                .toLowerCase()
-                .includes(nombre.toLowerCase().trim())
-            )
-          : inscripciones
-      )
+        retry(3), 
+        catchError(this.errorHandler)
       );
   }
 
-
-  obtenerSiguienteId() {
-    return Math.max(...this.listaInscripciones.map((o) => o.id + 1));
+  obtenerInscripcionesxAlumno(id?: number, nombre?: string) {
+    return  this.http
+    .get<Inscripcion[]>(
+      this.urlAPI +
+        'inscripciones?alumnoId=' + id +
+        (nombre ? '&nombre=' + nombre : '')
+        +
+        (nombre ? '&apellido=' + nombre : '')
+    )
+      .pipe(
+        retry(3), 
+        catchError(this.errorHandler)
+      );
   }
+
+  errorHandler(error:HttpErrorResponse) {
+    let errorMessage = '';
+    if(error.error instanceof ErrorEvent) {
+      // Get client-side error
+      errorMessage = error.error.message;
+    } else {
+      // Get server-side error
+      errorMessage = `Error Code: ${error.status}\nMessage: ${error.message}`;
+    }
+    console.log(errorMessage);
+    return throwError(() => new Error(errorMessage))
+ }
+
+ 
+
+  
 }

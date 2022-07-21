@@ -183,7 +183,7 @@
                   </div>
 
                   <div class="grid grid-cols-1 col-span-2">
-                    <div class="px-4 py-2 font-semibold">Cursos</div>
+                    <div *ngIf="inscripcion.alumno?.cursos" class="px-4 py-2 font-semibold">Cursos</div>
                     <div class="px-4 py-2">
                       <app-badge-list [items]="inscripcion.alumno?.cursos"></app-badge-list>
                     </div>
@@ -205,7 +205,7 @@
       <div
         class="w-full px-5 py-3 text-danger-300 uppercase font-medium text-center"
       >
-        No hay curso seleccionado
+        No hay inscripción seleccionada
       </div>
     </div>
   </div>

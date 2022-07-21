@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { UsuarioService } from 'src/app/core/services/usuario.service';
 import { Usuario } from 'src/app/models/usuario.model';
@@ -13,7 +13,11 @@ export class DetalleUsuariosComponent implements OnInit {
   susbcriptions: Subscription = new Subscription();
   usuario?: Usuario;
 
-  constructor(private usuarioService: UsuarioService, private router: Router) {}
+  constructor(
+    private usuarioService: UsuarioService,
+    private router: Router,
+    private activatedRoute: ActivatedRoute
+  ) {}
 
   ngOnDestroy() {
     this.susbcriptions.unsubscribe();
@@ -21,19 +25,23 @@ export class DetalleUsuariosComponent implements OnInit {
 
   ngOnInit(): void {
     this.susbcriptions.add(
-      this.usuarioService.obtenerUsuarioSeleccionado().subscribe({
-        next: (usuario) => {
-          if (usuario) {
-            this.usuario = usuario;
-          } else {
-            this.usuario = undefined;
-          }
-        },
-        error: (error) => {
-          console.error(error);
-        },
+      this.activatedRoute.params.subscribe((param) => {
+        //this.activatedRoute.snapshot.params['id']  //otra forma de obtener el parametro
+        this.usuarioService.seleccionarUsuarioxId(Number(param['id'])).subscribe({
+          next: (usuario) => {
+            if (usuario) {
+              this.usuario = usuario;
+            } else {
+              this.usuario = undefined;
+            }
+          },
+          error: (error) => {
+            console.error(error);
+          },
+        });
       })
     );
+
   }
 
   volver(): void {

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
-import { map, Observable, Subscription } from 'rxjs';
+import { ActivatedRoute, Router } from '@angular/router';
+import { from, mergeMap, switchMap, map, Observable, Subscription } from 'rxjs';
 import { InscripcionesService } from 'src/app/core/services/inscripciones.service';
 import { Inscripcion } from 'src/app/models/inscripcion.model';
 import { Curso } from 'src/app/models/curso.model';
@@ -19,8 +19,8 @@ export class FormularioInscripcionesComponent implements OnInit {
 
   formulario = this.fb.group({
     id: [''],
-    cursoId: ['', [Validators.required]],
-    alumnoId: ['', [Validators.required]],
+    curso: ['', [Validators.required]],
+    alumno: ['', [Validators.required]],
     fecha: [''],
     estado: ['', [Validators.required]],
   });
@@ -33,7 +33,8 @@ export class FormularioInscripcionesComponent implements OnInit {
     private router: Router,
     private inscripcionesService: InscripcionesService,
     private cursosService: CursosService,
-    private alumnosService: AlumnosService
+    private alumnosService: AlumnosService,
+    private activatedRoute: ActivatedRoute
   ) {
     this.cursosOPT$ = this.cursosService
       .obtenerCursos()
@@ -48,45 +49,76 @@ export class FormularioInscripcionesComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    
     this.susbcriptions.add(
-      this.inscripcionesService.obtenerInscripcionSeleccionado().subscribe({
-        next: (inscripcion) => {
-          if (inscripcion) {
-            this.formulario.patchValue(inscripcion);
-            this.formulario.get('cursoId')?.setValue(inscripcion.curso.id);
-            this.formulario.get('alumnoId')?.setValue(inscripcion.alumno.id);
-          } else {
-            this.formulario.reset();
-          }
-        },
-        error: (error) => {
-          console.error(error);
-        },
+      this.activatedRoute.params.subscribe((param) => {
+        //this.activatedRoute.snapshot.params['id']  //otra forma de obtener el parametro
+        if (Number(param['id']))
+          this.inscripcionesService
+            .seleccionarInscripcionxId(Number(param['id']))
+            .subscribe({
+              next: (inscripcion) => {
+                if (inscripcion) {
+                  this.formulario.patchValue(inscripcion);
+                } else {
+                  this.formulario.reset();
+                }
+              },
+              error: (error) => {
+                console.error(error);
+              },
+            });
       })
     );
   }
+
+  compararxId(o1: any, o2: any) {
+    return (o1.id == o2.id);
+   }
 
   cancelar() {
     this.router.navigate(['/inscripciones']);
   }
 
   agregarInscripcion(inscripcion: Inscripcion) {
-    inscripcion.curso = this.cursosService.obtenerCursoxId(this.formulario.get('cursoId')!.value);
-    inscripcion.alumno = this.alumnosService.obtenerAlumnoxId(this.formulario.get('alumnoId')!.value);
+
+    inscripcion.cursoId=inscripcion.curso?.id;
+    inscripcion.alumnoId=inscripcion.alumno?.id;
     if (inscripcion.id) {
       //es usuario existente
-      this.inscripcionesService.editarInscripcion(inscripcion);
+      this.susbcriptions.add(
+        this.inscripcionesService.editarInscripcion(inscripcion).subscribe({
+          next: (inscripcion) => {
+            console.log(inscripcion);
+            this.router.navigate(['/inscripciones']);
+            this.formulario.reset();
+          },
+          error: (error) => {
+            console.error(error);
+          },
+        })
+      );
     } else {
       //es nuevo usuario
-      inscripcion.id = this.inscripcionesService.obtenerSiguienteId();
-      this.inscripcionesService.agregarInscripcion(inscripcion);
+      this.susbcriptions.add(
+        this.inscripcionesService
+          .agregarInscripcion(inscripcion)
+
+          .subscribe({
+            next: (inscripcion) => {
+              console.log(inscripcion);
+              this.router.navigate(['/inscripciones']);
+              this.formulario.reset();
+            },
+            error: (error) => {
+              console.error(error);
+            },
+          })
+      );
     }
-    this.router.navigate(['/inscripciones']);
-    this.formulario.reset();
   }
 
   volver(): void {
     this.router.navigate(['/inscripciones']);
   }
 }
-

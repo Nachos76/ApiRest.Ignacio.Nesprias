@@ -22,13 +22,14 @@
               >
                 <mat-label>Curso</mat-label>
                 <mat-select
-                  formControlName="cursoId"
+                  formControlName="curso"
                   required
                   class="text-primary-800 text-sm dark:text-default-200"
+                  [compareWith]="compararxId"
                 >
                   <mat-option
                     *ngFor="let r of cursosOPT$ | async"
-                    [value]="r.id"
+                    [value]="r"
                     class="text-primary-800 text-sm dark:text-default-200 dark:bg-default-800 h-12"
                   >
                     <div class="flex items-center">
@@ -55,14 +56,16 @@
               >
                 <mat-label>Alumno</mat-label>
                 <mat-select
-                  formControlName="alumnoId"
+                  formControlName="alumno"
                   required
                   class="text-primary-800 text-sm dark:text-default-200"
+                  [compareWith]="compararxId"
                 >
-                  <mat-option
+                <mat-option
                     *ngFor="let r of alumnosOPT$ | async"
-                    [value]="r.id"
+                    [value]="r"
                     class="text-primary-800 text-sm dark:text-default-200 dark:bg-default-800 h-12"
+                    
                   >
                     <div class="flex items-center">
                       <app-avatar [imagen]="r.imagen"></app-avatar>
